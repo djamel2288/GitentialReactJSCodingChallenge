@@ -18,20 +18,18 @@ function SelectedRepoPrAnalyticsComponent({
                                               isRepoListEmpty
                                           }: SelectedRepoPrAnalyticsComponentProps) {
 
-    // const url = "https://api.github.com/repos/kubernetes/kubernetes/pulls";
-    const url = selectedRepoUrl + "/pulls";
-    // const url = "https://614b5ccfe4cc2900179eb074.mockapi.io/api/v1/product";
+    const [size, setSize] = useState(100)
+
+    const url = selectedRepoUrl + "/pulls?per_page=" + size;
     let [pullReq, setPullReq]: any = useState(null);
+
     useEffect(() => {
         axios.get<any>(url)
             .then(
                 rs => {
                     setPullReq(rs.data);
-                    console.warn("222222222222222222222222222222222222222222");
-                    console.warn(pullReq);
                 },
                 err => {
-                    console.warn("333333333333333333333333333333333333333333");
                     console.error(err);
                 }
             );
@@ -40,6 +38,10 @@ function SelectedRepoPrAnalyticsComponent({
     if (pullReq) {
         return (
             <div className="container my-5">
+
+                <div className="my-3">
+                    <input type="number" onChange={event => setSize((Number)(event!.target!.value))}/>
+                </div>
 
                 <table className="table bg-white table-hover table-striped">
                     <thead className="thead-light">
@@ -63,14 +65,6 @@ function SelectedRepoPrAnalyticsComponent({
                             <td>{req.user.login}</td>
                         </tr>
                     ))}
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                        <td>@mdo</td>
-                        <td>@mdo</td>
-                    </tr>
                     </tbody>
                 </table>
             </div>
@@ -81,12 +75,13 @@ function SelectedRepoPrAnalyticsComponent({
         return (
             <div className="text-white">
                 <h1>
-                    kach haja wkhlas :/
+                    You must select REPOSITORY first :/
                 </h1>
             </div>
         )
     }
 
+    // default
     return (
         <div className={style.container}>
 

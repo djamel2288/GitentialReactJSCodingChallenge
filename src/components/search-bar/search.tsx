@@ -7,7 +7,6 @@ const Search = ({filterCallBack}: any) => {
 
     const filter = (event: any): any => {
         filterText = event!.target!.value;
-        console.warn(filterText);
 
         // send data to selected-repo-pr-analytics component
         filterCallBack(filterText);

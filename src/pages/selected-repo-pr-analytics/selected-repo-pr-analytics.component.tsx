@@ -13,6 +13,8 @@ import Search from "../../components/search-bar/search";
 import createPlotlyComponent from "react-plotly.js/factory";
 import Plotly from 'plotly.js'
 
+import moment from 'moment';
+
 export interface SelectedRepoPrAnalyticsComponentProps
     extends SelectedRepoPrAnalyticsComponentPropsFromRedux {
 }
@@ -23,6 +25,9 @@ function SelectedRepoPrAnalyticsComponent({
                                           }: SelectedRepoPrAnalyticsComponentProps) {
 
     const [size, setSize] = useState(100);
+
+    let xAxis: any[] = [];
+    let yAxis: any[] = [];
 
     // const url = "https://api.github.com/repos/kubernetes/kubernetes/pulls";
     const url = selectedRepoUrl + "/pulls?per_page=" + size;
@@ -45,12 +50,22 @@ function SelectedRepoPrAnalyticsComponent({
     }, [url]);
 
     if (pullReq) {
-        pullReq.forEach((pReq: any) => {
-            if (pReq.title.includes("Memory manager test")) {
-                console.warn("elhmdoulillah")
-            }
-        })
 
+        /* get how many pull requests created per day */
+        pullReq.forEach((pr: any) => {
+
+            const calendarDay = moment(pr.created_at).format('YYYY-MM-DD');
+
+            const i = xAxis.indexOf(calendarDay);
+
+            if (i !== -1) {
+                yAxis.splice(i, 1, yAxis[i] + 1);
+            } else {
+                xAxis.push(calendarDay);
+                yAxis.push(1);
+            }
+
+        })
 
         /* get data from search component */
         const filterCallBack = (index: any) => {
@@ -85,17 +100,15 @@ function SelectedRepoPrAnalyticsComponent({
                         <Plot
                             data={[
                                 {
-                                    x: [1, 2, 3],
-                                    y: [2, 6, 3],
-                                    type: 'scatter',
-                                    mode: 'lines+markers',
-                                    marker: {color: 'red'},
+                                    type: 'bar',
+                                    x: xAxis,
+                                    y: yAxis,
+                                    name: 'Pull per day'
                                 },
-                                {type: 'bar', x: [1, 2, 3], y: [2, 5, 3]},
                             ]}
-                            layout={{title: 'A Fancy Plot', autosize: true}}
+                            layout={{title: selectedRepoUrl, autosize: true}}
                             useResizeHandler={true}
-                            style ={{width: "100%", height: "100%"}}
+                            style={{width: "100%", height: "100%"}}
                             config={{responsive: true}}
                         />
                     </div>

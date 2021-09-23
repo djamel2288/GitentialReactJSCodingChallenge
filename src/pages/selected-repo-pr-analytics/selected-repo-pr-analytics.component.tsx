@@ -8,6 +8,7 @@ import {
 import style from './selected-repo-pr-analytics.module.scss'
 
 import axios from 'axios';
+import Search from "../../components/search-bar/search";
 
 export interface SelectedRepoPrAnalyticsComponentProps
     extends SelectedRepoPrAnalyticsComponentPropsFromRedux {
@@ -18,10 +19,13 @@ function SelectedRepoPrAnalyticsComponent({
                                               isRepoListEmpty
                                           }: SelectedRepoPrAnalyticsComponentProps) {
 
-    const [size, setSize] = useState(100)
+    const [size, setSize] = useState(100);
 
+    // const url = "https://api.github.com/repos/kubernetes/kubernetes/pulls";
     const url = selectedRepoUrl + "/pulls?per_page=" + size;
     let [pullReq, setPullReq]: any = useState(null);
+
+    let [filterText, setFilterText] = useState('');
 
     useEffect(() => {
         axios.get<any>(url)
@@ -36,13 +40,39 @@ function SelectedRepoPrAnalyticsComponent({
     }, [url]);
 
     if (pullReq) {
+        pullReq.forEach((pReq: any) => {
+            if (pReq.title.includes("Memory manager test")) {
+                console.warn("elhmdoulillah")
+            }
+        })
+
+        const filterCallBack = (index: any) => { // the callback. Use a better name
+            console.warn("index:", index);
+            setFilterText(index);
+            console.warn("filterText: ", filterText)
+            filterText = index;
+        };
+
         return (
             <div className="container my-5">
 
-                <div className="my-3">
-                    <input type="number" onChange={event => setSize((Number)(event!.target!.value))}/>
+                <div className="my-3 row">
+
+                    {/* search component */}
+                    <div className="col-auto">
+                        <Search filterCallBack={filterCallBack}/>
+                    </div>
+
+                    {/* select numbre of rows per page */}
+                    <div className="col-auto">
+                        <input type="number"
+                               placeholder="Row per page"
+                               onChange={event => setSize((Number)(event!.target!.value))}/>
+                    </div>
+
                 </div>
 
+                {/* my table */}
                 <table className="table bg-white table-hover table-striped">
                     <thead className="thead-light">
                     <tr className="text-center">
@@ -55,7 +85,64 @@ function SelectedRepoPrAnalyticsComponent({
                     </tr>
                     </thead>
                     <tbody>
-                    {pullReq!.map((req: any, i: any) => (
+
+                    {/* display data using gitHub API */}
+
+                    {filterText.length !== 0
+                        ? Object.keys(pullReq)
+                            .filter(key => pullReq[key].title === filterText)
+                            .map(
+                                (key: any) => {
+                                    return (
+                                        <tr key={key}>
+                                            <th scope="row">{pullReq[key].id}</th>
+                                            <td>{pullReq[key].state}</td>
+                                            <td>{pullReq[key].title}</td>
+                                            <td>{pullReq[key].labels[0].node_id}</td>
+                                            <td>{pullReq[key].created_at}</td>
+                                            <td>{pullReq[key].user.login}</td>
+                                        </tr>
+                                    )
+                                }
+                            )
+                        : Object.keys(pullReq)
+                            .map(
+                                (key: any) => {
+                                    return (
+                                        <tr key={key}>
+                                            <th scope="row">{pullReq[key].id}</th>
+                                            <td>{pullReq[key].state}</td>
+                                            <td>{pullReq[key].title}</td>
+                                            <td>{pullReq[key].labels[0].node_id}</td>
+                                            <td>{pullReq[key].created_at}</td>
+                                            <td>{pullReq[key].user.login}</td>
+                                        </tr>
+                                    )
+                                }
+                            )
+                    }
+
+
+                    {/*{Object.keys(pullReq)
+                        .filter(key => pullReq[key].title === filterText)
+                        .map(
+                            (key: any, index: any) => {
+                                return (
+                                    <tr key={key}>
+                                        <th scope="row">{pullReq[key].id}</th>
+                                        <td>{pullReq[key].state}</td>
+                                        <td>{pullReq[key].title}</td>
+                                        <td>{pullReq[key].labels[0].node_id}</td>
+                                        <td>{pullReq[key].created_at}</td>
+                                        <td>{pullReq[key].user.login}</td>
+                                    </tr>
+                                )
+                            }
+                        )
+                    }*/}
+
+
+                    {/*{pullReq!.map((req: any, i: any) => (
                         <tr key={`entity-${i}`} data-cy="entityTable">
                             <th scope="row">{req.id}</th>
                             <td>{req.state}</td>
@@ -64,13 +151,15 @@ function SelectedRepoPrAnalyticsComponent({
                             <td>{req.created_at}</td>
                             <td>{req.user.login}</td>
                         </tr>
-                    ))}
+                    ))}*/}
+
                     </tbody>
                 </table>
             </div>
         )
     }
 
+    // if no selected repository
     if (isRepoListEmpty) {
         return (
             <div className="text-white">

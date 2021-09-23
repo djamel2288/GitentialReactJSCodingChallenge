@@ -18,12 +18,10 @@ function SelectedRepoPrAnalyticsComponent({
                                               isRepoListEmpty
                                           }: SelectedRepoPrAnalyticsComponentProps) {
 
-    // const url = "https://api.github.com/repos/djamel228/pulls";
-    const url = "https://614b5ccfe4cc2900179eb074.mockapi.io/api/v1/product";
-    let [pullReq, setPullReq] = useState(null);
-
-    console.warn("111111111111111111111111111111111111111111");
-
+    // const url = "https://api.github.com/repos/kubernetes/kubernetes/pulls";
+    const url = selectedRepoUrl + "/pulls";
+    // const url = "https://614b5ccfe4cc2900179eb074.mockapi.io/api/v1/product";
+    let [pullReq, setPullReq]: any = useState(null);
     useEffect(() => {
         axios.get<any>(url)
             .then(
@@ -37,57 +35,12 @@ function SelectedRepoPrAnalyticsComponent({
                     console.error(err);
                 }
             );
-    }, [url, pullReq]);
-
+    }, [url]);
 
     if (pullReq) {
-        <div className="container">
+        return (
+            <div className="container my-5">
 
-            <div>
-                {{pullReq}}
-            </div>
-
-            <table className="table bg-white table-hover table-striped">
-                <thead className="thead-light">
-                <tr className="text-center">
-                    <th scope="col">ID</th>
-                    <th scope="col">State</th>
-                    <th scope="col">Title</th>
-                    <th scope="col">Labels</th>
-                    <th scope="col">Created At</th>
-                    <th scope="col">Created by</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <th scope="row">1</th>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                    <td>@mdo</td>
-                    <td>@mdo</td>
-                </tr>
-                <tr>
-                    <th scope="row">1</th>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                    <td>@mdo</td>
-                    <td>@mdo</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    }
-
-    return (
-        <div className={style.container}>
-
-            <div className="text-white my-5">
-                TODO: Add a chart and a table
-            </div>
-
-            <div className="container">
                 <table className="table bg-white table-hover table-striped">
                     <thead className="thead-light">
                     <tr className="text-center">
@@ -100,14 +53,16 @@ function SelectedRepoPrAnalyticsComponent({
                     </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                        <td>@mdo</td>
-                        <td>@mdo</td>
-                    </tr>
+                    {pullReq!.map((req: any, i: any) => (
+                        <tr key={`entity-${i}`} data-cy="entityTable">
+                            <th scope="row">{req.id}</th>
+                            <td>{req.state}</td>
+                            <td>{req.title}</td>
+                            <td>{req.labels[0].node_id}</td>
+                            <td>{req.created_at}</td>
+                            <td>{req.user.login}</td>
+                        </tr>
+                    ))}
                     <tr>
                         <th scope="row">1</th>
                         <td>Mark</td>
@@ -118,6 +73,25 @@ function SelectedRepoPrAnalyticsComponent({
                     </tr>
                     </tbody>
                 </table>
+            </div>
+        )
+    }
+
+    if (isRepoListEmpty) {
+        return (
+            <div className="text-white">
+                <h1>
+                    kach haja wkhlas :/
+                </h1>
+            </div>
+        )
+    }
+
+    return (
+        <div className={style.container}>
+
+            <div className="text-white my-5">
+                TODO: Add a chart and a table
             </div>
 
         </div>

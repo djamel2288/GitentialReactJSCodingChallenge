@@ -10,6 +10,9 @@ import style from './selected-repo-pr-analytics.module.scss'
 import axios from 'axios';
 import Search from "../../components/search-bar/search";
 
+import createPlotlyComponent from "react-plotly.js/factory";
+import Plotly from 'plotly.js'
+
 export interface SelectedRepoPrAnalyticsComponentProps
     extends SelectedRepoPrAnalyticsComponentPropsFromRedux {
 }
@@ -26,6 +29,8 @@ function SelectedRepoPrAnalyticsComponent({
     let [pullReq, setPullReq]: any = useState(null);
 
     let [filterText, setFilterText] = useState('');
+
+    const Plot = createPlotlyComponent(Plotly);
 
     useEffect(() => {
         axios.get<any>(url)
@@ -46,16 +51,17 @@ function SelectedRepoPrAnalyticsComponent({
             }
         })
 
-        const filterCallBack = (index: any) => { // the callback. Use a better name
-            console.warn("index:", index);
+
+        /* get data from search component */
+        const filterCallBack = (index: any) => {
             setFilterText(index);
-            console.warn("filterText: ", filterText)
             filterText = index;
         };
 
         return (
             <div className="container my-5">
 
+                {/* inputs */}
                 <div className="my-3 row">
 
                     {/* search component */}
@@ -68,6 +74,30 @@ function SelectedRepoPrAnalyticsComponent({
                         <input type="number"
                                placeholder="Row per page"
                                onChange={event => setSize((Number)(event!.target!.value))}/>
+                    </div>
+
+                </div>
+
+                {/* chart */}
+                <div className="row my-5 justify-content-center">
+
+                    <div className="col-auto">
+                        <Plot
+                            data={[
+                                {
+                                    x: [1, 2, 3],
+                                    y: [2, 6, 3],
+                                    type: 'scatter',
+                                    mode: 'lines+markers',
+                                    marker: {color: 'red'},
+                                },
+                                {type: 'bar', x: [1, 2, 3], y: [2, 5, 3]},
+                            ]}
+                            layout={{title: 'A Fancy Plot', autosize: true}}
+                            useResizeHandler={true}
+                            style ={{width: "100%", height: "100%"}}
+                            config={{responsive: true}}
+                        />
                     </div>
 
                 </div>
@@ -88,6 +118,7 @@ function SelectedRepoPrAnalyticsComponent({
 
                     {/* display data using gitHub API */}
 
+                    {/* if filterText.length !== 0, then do filter */}
                     {filterText.length !== 0
                         ? Object.keys(pullReq)
                             .filter(key => pullReq[key].title.toLowerCase().includes(filterText.toLowerCase()))
@@ -105,7 +136,7 @@ function SelectedRepoPrAnalyticsComponent({
                                     )
                                 }
                             )
-                        : Object.keys(pullReq)
+                        : Object.keys(pullReq)  // else load all (100) rows */
                             .map(
                                 (key: any) => {
                                     return (

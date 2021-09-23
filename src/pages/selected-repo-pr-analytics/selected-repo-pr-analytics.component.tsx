@@ -90,7 +90,7 @@ function SelectedRepoPrAnalyticsComponent({
 
                     {filterText.length !== 0
                         ? Object.keys(pullReq)
-                            .filter(key => pullReq[key].title === filterText)
+                            .filter(key => pullReq[key].title.toLowerCase().includes(filterText.toLowerCase()))
                             .map(
                                 (key: any) => {
                                     return (
@@ -121,37 +121,6 @@ function SelectedRepoPrAnalyticsComponent({
                                 }
                             )
                     }
-
-
-                    {/*{Object.keys(pullReq)
-                        .filter(key => pullReq[key].title === filterText)
-                        .map(
-                            (key: any, index: any) => {
-                                return (
-                                    <tr key={key}>
-                                        <th scope="row">{pullReq[key].id}</th>
-                                        <td>{pullReq[key].state}</td>
-                                        <td>{pullReq[key].title}</td>
-                                        <td>{pullReq[key].labels[0].node_id}</td>
-                                        <td>{pullReq[key].created_at}</td>
-                                        <td>{pullReq[key].user.login}</td>
-                                    </tr>
-                                )
-                            }
-                        )
-                    }*/}
-
-
-                    {/*{pullReq!.map((req: any, i: any) => (
-                        <tr key={`entity-${i}`} data-cy="entityTable">
-                            <th scope="row">{req.id}</th>
-                            <td>{req.state}</td>
-                            <td>{req.title}</td>
-                            <td>{req.labels[0].node_id}</td>
-                            <td>{req.created_at}</td>
-                            <td>{req.user.login}</td>
-                        </tr>
-                    ))}*/}
 
                     </tbody>
                 </table>

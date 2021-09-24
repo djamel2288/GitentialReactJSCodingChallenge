@@ -15,6 +15,10 @@ import Plotly from 'plotly.js'
 
 import moment from 'moment';
 
+import Moment from 'react-moment';
+
+import 'moment-timezone'
+
 export interface SelectedRepoPrAnalyticsComponentProps
     extends SelectedRepoPrAnalyticsComponentPropsFromRedux {
 }
@@ -143,7 +147,11 @@ function SelectedRepoPrAnalyticsComponent({
                                             <td>{pullReq[key].state}</td>
                                             <td>{pullReq[key].title}</td>
                                             <td>{pullReq[key].labels[0].node_id}</td>
-                                            <td>{pullReq[key].created_at}</td>
+                                            <td>
+                                                <Moment format="YYYY/MM/DD">
+                                                    {pullReq[key].created_at}
+                                                </Moment>
+                                            </td>
                                             <td>{pullReq[key].user.login}</td>
                                         </tr>
                                     )
@@ -157,8 +165,15 @@ function SelectedRepoPrAnalyticsComponent({
                                             <th scope="row">{pullReq[key].id}</th>
                                             <td>{pullReq[key].state}</td>
                                             <td>{pullReq[key].title}</td>
+                                            {/* for labels I just ge3 the first one because it's an array,
+                                                and I can't display all items
+                                            */}
                                             <td>{pullReq[key].labels[0].node_id}</td>
-                                            <td>{pullReq[key].created_at}</td>
+                                            <td>
+                                                <Moment format="DD-MM-YYYY">
+                                                    {pullReq[key].created_at}
+                                                </Moment>
+                                            </td>
                                             <td>{pullReq[key].user.login}</td>
                                         </tr>
                                     )
